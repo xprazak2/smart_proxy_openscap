@@ -12,7 +12,7 @@ module Proxy
         ::OpenSCAP.oscap_init
         source = ::OpenSCAP::Source.new(in_file)
         json = type == 'scap_content' ? scap_content_profiles(source) : tailoring_profiles(source)
-        File.write out_file, json
+        File.open(out_file, 'w') { |file| file.write json }
       ensure
         source.destroy if source
         ::OpenSCAP.oscap_cleanup

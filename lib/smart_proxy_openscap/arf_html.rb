@@ -6,7 +6,7 @@ module Proxy
     class ArfHtml
       def generate_html(file_in, file_out)
         ::OpenSCAP.oscap_init
-        File.write file_out, get_arf_html(file_in)
+        File.open(file_out, 'w') { |file| file.write get_arf_html(file_in) }
       ensure
         ::OpenSCAP.oscap_cleanup
       end

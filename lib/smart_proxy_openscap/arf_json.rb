@@ -26,7 +26,7 @@ module Proxy
         items        = benchmark.items
 
         report = parse_results(items, results, arf_digest)
-        File.write file_out, report.to_json
+        File.open(file_out, 'w') { |file| file.write report.to_json }
       ensure
         cleanup test_result, benchmark, sds, arf
       end

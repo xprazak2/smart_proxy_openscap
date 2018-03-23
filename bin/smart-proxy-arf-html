@@ -2,6 +2,7 @@
 path = File.join(File.dirname(File.expand_path(__FILE__)), '..', 'lib')
 $:.unshift(path) if File.exist? path
 
+require "rubygems" if RUBY_VERSION.start_with? "1.8"
 require 'smart_proxy_openscap/arf_html'
 
 Proxy::OpenSCAP::ArfHtml.new.generate_html ARGV[0], ARGV[1]
