@@ -82,6 +82,14 @@ module Proxy::OpenSCAP
       end
     end
 
+    post "/arf/remediate" do
+      begin
+        Proxy::OpenSCAP::FixGenerator.new.generate_fixes(JSON.parse request.body.string)
+      rescue
+        log_halt 500, "Could not generate fix for report"
+      end
+    end
+
     get "/policies/:policy_id/content/:digest" do
       content_type 'application/xml'
       begin
