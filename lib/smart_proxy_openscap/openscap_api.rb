@@ -107,7 +107,7 @@ module Proxy::OpenSCAP
       begin
         Proxy::OpenSCAP::FetchScapContent.new.get_policy_content(params[:policy_id], 'scap_content')
       rescue *HTTP_ERRORS => e
-        log_halt e.response.code.to_i, "File not found on Foreman. Wrong policy id?"
+        log_halt e.response.code.to_i, file_not_found_msg
       rescue StandardError => e
         log_halt 500, "Error occurred: #{e.message}"
       end
@@ -118,7 +118,19 @@ module Proxy::OpenSCAP
       begin
         Proxy::OpenSCAP::FetchTailoringFile.new.get_tailoring_file(params[:policy_id], params[:digest])
       rescue *HTTP_ERRORS => e
-        log_halt e.response.code.to_i, "File not found on Foreman. Wrong policy id?"
+        log_halt e.response.code.to_i, file_not_found_msg
+      rescue StandardError => e
+        log_halt 500, "Error occurred: #{e.message}"
+      end
+    end
+
+    get "/oval_policies/:oval_policy_id/oval_content/:digest" do
+      content_type 'application/xml'
+      begin
+        Proxy::OpenSCAP::FetchScapFile.new(:oval_content)
+          .fetch(params[:oval_policy_id], params[:digest], Proxy::OpenSCAP::Plugin.settings.oval_content_dir)
+      rescue *HTTP => e
+        log_halt e.response.code.to_i, file_not_found_msg
       rescue StandardError => e
         log_halt 500, "Error occurred: #{e.message}"
       end
@@ -182,6 +194,10 @@ module Proxy::OpenSCAP
       rescue StandardError => e
         log_halt 500, "Error occurred: #{e.message}"
       end
+    end
+
+    def file_not_found_msg
+      "File not found on Foreman. Wrong policy id?"
     end
   end
 end
